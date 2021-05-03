@@ -22,3 +22,18 @@ fetch('/rainbow.jpeg').then(response => {
     })
     });
 
+// data from https://data.giss.nasa.gov/gistemp/
+getData();
+
+async function getData() {
+    const response = await fetch('NASA info.csv');
+    const data = await response.text();
+
+    const rows = data.split('\n').slice(1);
+    rows.forEach(elt => {
+        const row = elt.split(',');
+        const year = row[0];
+        const temp = row[1];
+        console.log(year, temp);
+    });
+}
