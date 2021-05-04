@@ -7,7 +7,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     tileSize: 512,
     zoomOffset: -1,
     accessToken: 'pk.eyJ1IjoidG9tMTM1OCIsImEiOiJja284aDJydGQybWc1MnhwZ2V0aWUxb2JpIn0.0hLrp4EP06L3YXBgr7-B1A'
-}).addTo(mymap);*/
+}).addTo(mymap);
 
 console.log('about to fetch a rainbow');
 fetch('/rainbow.jpeg').then(response => {
@@ -73,4 +73,19 @@ async function chartIt() {
             }
         }
     });
-}
+}*/
+
+
+
+const api_url="https://api.wheretheiss.at/v1/satellites/25544";
+async function getISS() {
+    const response = await fetch(api_url);
+    const data = await response.json();
+    const { latitude, longitude } = data;
+    document.getElementById('lat').textContent = latitude;
+    document.getElementById('lon').textContent = longitude;
+    console.log(latitude);
+    console.log(longitude);
+};
+
+getISS();
