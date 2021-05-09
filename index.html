@@ -4,15 +4,70 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/style.css"/>
-    <title>Document</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- CSS styling for map - line 34-->
+    <style> 
+        #issMap {
+            height: 400px;
+        }
+    </style>
+    <!---------------------------------->
+
+    <title>Current Location of the ISS</title>
 </head>
+
 <body>
-    <img src="" id="rainbow"/>
-    <canvas id="chart"></canvas>
-    
-    <script src="app.js"></script>
 
+<h1>Where is the ISS?</h1>
 
+<P>
+    Latitude: <span id="lat"></span><br>
+    Longitude: <span id="lon"></span>
+</P>
+
+<div id="issMap"></div>
+
+    <script>
+        // MAKING A MAP AND TILES
+        const mymap = L.map('issMap').setView([0, 0], 1); // 'L' is a reference to the Leaflet Maps library, which 'L' calls.
+        const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' // attribution found on website for copyright, symbol used with &copy
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'; // format for URL of any given tile - S = style, Z = zoom, X/ Y = lat/ lon.  This is simply the format so our code knows what convention to use for loading tiles from StreetMap 
+        const tiles = L.tileLayer(tileUrl, { attribution });
+        tiles.addTo(mymap);
+
+        // MAKING A MARKER
+        const marker = L.marker([0, 0]).addTo(mymap); // Adds a marker to the map to show where the ISS is, line 63 will populate the fields, replacing the 0,0 fields.
+
+        // GETTING THE DATA FROM THE API TO SHOW WHERE THE ISS CURRENTLY IS
+        // API and information from https://wheretheiss.at/
+        const api_url = 'https://api.wheretheiss.at/v1/satellites/25544'; // link to url of API with informationr required
+
+        async function getISS() {
+            const response = await fetch(api_url); // async function works with await to get information from global variable (API URL) once that is loaded and available, via the fetch function
+            const data = await response.json(); // once response received from API, converts the data in the response to JSON format
+            console.log(data.latitude);
+            console.log(data.longitude); // takes the specific data of latitude and longitude from the JSON data & logs it
+            const { latitude, longitude } = data;
+            console.log(latitude);
+            console.log(longitude); // another way of doing this - JAVASCRIPT DESCRUCTURING - takes specific pieces out of JS object/ array and puts them into separate variables
+
+            // L.marker( [latitude, longitude]).addTo(mymap); // NOT USING THIS because it would not automatically update, only when the page is refreshed.
+            marker.setLatLng([latitude, longitude]); //Using this because the setLatLng function (& variables on line 58) from the Leaflet library will automatically update when the ISS location is updated from the API.
+
+            document.getElementById('lat').textContent = latitude; // places data from line 37 into the <span> in the HTML on line 32
+            document.getElementById('lon').textContent = longitude; // places data from line 37 into the <span> in the HTML on line 33
+        }
+
+        getISS();
+
+    </script>
 </body>
 </html>
